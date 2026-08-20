@@ -2,7 +2,7 @@
 set -e
 
 BUILD_DIR="build"
-VCPKG_PATH="C:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake"
+VCPKG_PATH="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 TARGET_NAME="caldera"
 
 #rm -rf "$BUILD_DIR"
