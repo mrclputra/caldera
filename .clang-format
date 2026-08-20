@@ -30,5 +30,5 @@ SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 
-SortIncludes: true
-IncludeBlocks: Regroup
+SortIncludes: false
+IncludeBlocks: Preserve
