@@ -1,5 +1,6 @@
 #include <iostream>
 
+#define GLFW_INCLUDE_NONE
 #include "app.h"
 
 int main(int argc, char *argv[]) {
