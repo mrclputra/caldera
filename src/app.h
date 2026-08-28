@@ -19,6 +19,7 @@ void glfw_key_callback(GLFWwindow *window, int key, int, int action, int) {
 }
 void glfw_framebuffer_size_callback(GLFWwindow *, int width, int height) {
    glViewport(0, 0, width, height);
+   // SPDLOG_INFO("viewport changed {}.{}", width, height);
 }
 
 // basic app class for high-level application management and stuff

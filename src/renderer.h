@@ -16,6 +16,8 @@ class renderer {
       glEnable(GL_DEPTH_TEST);
       // glEnable(GL_PROGRAM_POINT_SIZE); // to be configured, so i dont forget
 
+      shader_ = std::make_unique<shader>("assets/vertex.glsl", "assets/fragment.glsl");
+
       float vertices[] = {
           -0.5f, -0.5f, 0.0f,  // left
           0.5f, -0.5f, 0.0f,   // right
@@ -43,7 +45,7 @@ class renderer {
       glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      shader_.bind();
+      shader_->bind();
       glBindVertexArray(vao);
       glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -55,6 +57,6 @@ class renderer {
    unsigned int vao;
 
    // todo: switch to using smart pointers
-   shader shader_{"assets/vertex.glsl", "assets/fragment.glsl"};
+   std::unique_ptr<shader> shader_;
 };
 }  // namespace caldera
