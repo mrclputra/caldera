@@ -1,7 +1,6 @@
-#version 300 es
-precision highp float;
+#version 330 core
+layout (location = 0) in vec3 aPos;
 
 void main() {
-   vec2 vertices[3] = vec2[](vec2(-1.0, -1.0), vec2( 3.0, -1.0), vec2(-1.0,  3.0));
-   gl_Position = vec4(vertices[gl_VertexID], 0.0, 1.0);
+   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0f);
 }

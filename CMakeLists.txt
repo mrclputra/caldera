@@ -20,6 +20,7 @@ target_link_libraries(caldera
    spdlog::spdlog
 )
 
+target_compile_definitions(caldera PRIVATE GLFW_INCLUDE_NONE)
 add_custom_target(copy_assets
    COMMAND
    ${CMAKE_COMMAND} -E copy_directory

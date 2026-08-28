@@ -1,8 +1,6 @@
-#version 300 es
-precision highp float;
-
-out vec4 fragColor;
+#version 330 core
+out vec4 FragColor;
 
 void main() {
-   fragColor = vec4(1.0, 0.4, 0.4, 1.0);
+   FragColor = vec4(1.0f);
 }
