@@ -14,8 +14,16 @@ add_executable(caldera
 )
 
 target_link_libraries(caldera
-        glad::glad
-        glfw
-        glm::glm
-        spdlog::spdlog
+   glad::glad
+   glfw
+   glm::glm
+   spdlog::spdlog
 )
+
+add_custom_target(copy_assets
+   COMMAND
+   ${CMAKE_COMMAND} -E copy_directory
+   "${CMAKE_SOURCE_DIR}/src/shaders"
+   "${CMAKE_CURRENT_BINARY_DIR}/assets"
+)
+add_dependencies(caldera copy_assets)

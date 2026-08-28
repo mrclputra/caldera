@@ -3,10 +3,22 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <spdlog/spdlog.h>
+
+#include <memory>
 
 #include "renderer.h"
 
 namespace caldera {
+
+void glfw_error_callback(int error, const char* description) {
+   SPDLOG_ERROR("glfw error {}: {}", error, description);
+}
+void glfw_key_callback(GLFWwindow* window, int key, int, int action, int) {
+   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+      glfwSetWindowShouldClose(window, true);
+}
+
 // basic app class for high-level application management and stuff
 // events and bindings go here, callbacks should be sourced from here
 class app {
@@ -17,14 +29,22 @@ class app {
       glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+      glfwSetErrorCallback(glfw_error_callback);
+
       window = glfwCreateWindow(1280, 720, "caldera", nullptr, nullptr);
       glfwMakeContextCurrent(window);
       gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+      glfwSetKeyCallback(window, glfw_key_callback);
+
+      renderer_ = std::make_unique<renderer>();
+
+      SPDLOG_INFO("application initialized");
    }
 
    void start() {
       while (!glfwWindowShouldClose(window)) {
-         renderer.render(window);
+         renderer_->render(window);
       }
       shutdown();
    }
@@ -33,9 +53,11 @@ class app {
    void shutdown() {
       glfwDestroyWindow(window);
       glfwTerminate();
+      SPDLOG_INFO("application closed");
    }
 
    GLFWwindow *window;
-   renderer renderer;
+
+   std::unique_ptr<renderer> renderer_;
 };
 }  // namespace caldera

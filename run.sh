@@ -19,4 +19,5 @@ cmake -B "$BUILD_DIR" -S . \
 
 cmake --build "$BUILD_DIR"
 
-./"$BUILD_DIR"/"$TARGET_NAME".exe
+cd "$BUILD_DIR"
+./"$TARGET_NAME".exe
