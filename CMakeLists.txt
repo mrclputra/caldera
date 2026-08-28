@@ -8,15 +8,20 @@ find_package(glad REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(tinyply REQUIRED)
 
+# add_executable(caldera
+#    src/main.cpp
+# )
 add_executable(caldera
-   src/main.cpp
+   src/loader.cpp
 )
 
 target_link_libraries(caldera
    glad::glad
    glfw
    glm::glm
+   tinyply
    spdlog::spdlog
 )
 

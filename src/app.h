@@ -19,8 +19,8 @@ void glfw_key_callback(GLFWwindow *window, int key, int, int action, int) {
 }
 void glfw_framebuffer_size_callback(GLFWwindow *, int width, int height) {
    glViewport(0, 0, width, height);
-   // SPDLOG_INFO("viewport changed {}.{}", width, height);
 }
+// TODO: use event system to bind glfw actions
 
 // basic app class for high-level application management and stuff
 // events and bindings go here, callbacks should be sourced from here
