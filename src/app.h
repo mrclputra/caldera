@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "renderer.h"
+#include "loader.h"
 
 namespace caldera {
 
@@ -44,6 +45,10 @@ class App {
       renderer = std::make_unique<Renderer>();
 
       SPDLOG_INFO("application initialized");
+
+      // testing function
+      Loader loader;
+      loader.read_ply_file("D:/datasets/clouds/Workshop_point_cloud.ply", true);
    }
 
    void start() {

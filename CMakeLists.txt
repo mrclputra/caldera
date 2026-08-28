@@ -10,12 +10,10 @@ find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(tinyply REQUIRED)
 
-# add_executable(caldera
-#    src/main.cpp
-# )
 add_executable(caldera
-   src/loader.cpp
+   src/main.cpp
 )
+
 
 target_link_libraries(caldera
    glad::glad

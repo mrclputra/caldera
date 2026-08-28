@@ -1,4 +1,4 @@
-#pragma once
+// this is an example file of how to do basic read/write operations with tinyply
 
 #include <tinyply.h>
 using namespace tinyply;
@@ -150,6 +150,7 @@ void read_ply_file(const std::string &filepath, const bool preload_into_memory =
 }  // namespace caldera
 
 int main(int argc, char *argv[]) {
-   caldera::read_ply_file("C:/Users/Marcelino/Desktop/tests/scans/14_04_26 GP Scans/bigrock_pc_001.ply", true);
+   caldera::read_ply_file("D:/datasets/clouds/Workshop_point_cloud.ply", true);
+   // caldera::read_ply_file("C:/Users/Marcelino/Desktop/tests/scans/14_04_26 GP Scans/bigrock_pc_001.ply", true);
    return 0;
 }
