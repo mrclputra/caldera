@@ -13,9 +13,9 @@
 
 namespace caldera {
 // this is a wrapper class for a shader program
-class shader {
+class Shader {
  public:
-   shader(const std::string &vertex_path, const std::string &fragment_path) {
+   Shader(const std::string &vertex_path, const std::string &fragment_path) {
       // build shader program instantly
       GLuint vert = compile(GL_VERTEX_SHADER, read_file(vertex_path));
       GLuint frag = compile(GL_FRAGMENT_SHADER, read_file(fragment_path));
@@ -37,7 +37,7 @@ class shader {
       glDeleteShader(vert);
       glDeleteShader(frag);
    }
-   ~shader() {
+   ~Shader() {
       unbind();  // jic
       glDeleteProgram(program);
    }

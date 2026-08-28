@@ -10,13 +10,13 @@ namespace caldera {
 // - shader uploading
 // - vertex buffer uploading
 
-class renderer {
+class Renderer {
  public:
-   renderer() {
+   Renderer() {
       glEnable(GL_DEPTH_TEST);
       // glEnable(GL_PROGRAM_POINT_SIZE); // to be configured, so i dont forget
 
-      shader_ = std::make_unique<shader>("assets/vertex.glsl", "assets/fragment.glsl");
+      shader = std::make_unique<Shader>("assets/vertex.glsl", "assets/fragment.glsl");
 
       float vertices[] = {
           -0.5f, -0.5f, 0.0f,  // left
@@ -37,7 +37,7 @@ class renderer {
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindVertexArray(0);
    }
-   ~renderer() {
+   ~Renderer() {
       glDeleteVertexArrays(1, &vao);
       glDeleteBuffers(1, &vbo);
    }
@@ -45,7 +45,7 @@ class renderer {
       glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      shader_->bind();
+      shader->bind();
       glBindVertexArray(vao);
       glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -57,6 +57,6 @@ class renderer {
    unsigned int vao;
 
    // todo: switch to using smart pointers
-   std::unique_ptr<shader> shader_;
+   std::unique_ptr<Shader> shader;
 };
 }  // namespace caldera

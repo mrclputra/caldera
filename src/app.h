@@ -24,9 +24,9 @@ void glfw_framebuffer_size_callback(GLFWwindow *, int width, int height) {
 
 // basic app class for high-level application management and stuff
 // events and bindings go here, callbacks should be sourced from here
-class app {
+class App {
  public:
-   app() {
+   App() {
       glfwInit();
       glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
       glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -41,14 +41,14 @@ class app {
       glfwSetKeyCallback(window, glfw_key_callback);
       glfwSetFramebufferSizeCallback(window, glfw_framebuffer_size_callback);
 
-      renderer_ = std::make_unique<renderer>();
+      renderer = std::make_unique<Renderer>();
 
       SPDLOG_INFO("application initialized");
    }
 
    void start() {
       while (!glfwWindowShouldClose(window)) {
-         renderer_->render(window);
+         renderer->render(window);
       }
       shutdown();
    }
@@ -62,6 +62,6 @@ class app {
 
    GLFWwindow *window;
 
-   std::unique_ptr<renderer> renderer_;
+   std::unique_ptr<Renderer> renderer;
 };
 }  // namespace caldera
