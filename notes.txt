@@ -1,0 +1,3 @@
+this is for notes and stuff I will think about as I write this project
+todo:
+   - write a combined loader class for pcd, use tinyply and tinygltf preferably
