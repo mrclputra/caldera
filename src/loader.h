@@ -3,6 +3,8 @@
 #include <tinyply.h>
 using namespace tinyply;
 #include <spdlog/spdlog.h>
+#include <glad/glad.h>
+#include <glm/glm.hpp>
 
 #include <vector>
 #include <fstream>
@@ -10,11 +12,22 @@ using namespace tinyply;
 
 #include <spanstream>  // ++23
 
+#include "scene.h"
+#include "pointcloud.h"
+
 namespace caldera {
+
+struct Vertex {
+   glm::vec3 position{0.0f};
+   glm::vec3 normal{0.0f};
+   glm::vec3 tangent{0.0f};
+   glm::vec3 bitangent{0.0f};
+   glm::vec3 color{0.0f};
+};
 
 class Loader {
  public:
-   void read_ply_file(const std::string &path, const bool preload) {
+   void read_ply_file(Scene &scene, const std::string &path, const bool preload) {
       SPDLOG_INFO("reading ply file: {}", path);
 
       std::unique_ptr<std::istream> file_stream;
@@ -32,7 +45,7 @@ class Loader {
             throw std::runtime_error("file_stream failed to open " + path);
 
          file_stream->seekg(0, std::ios::end);
-         const float size_mb = file_stream->tellg() * float(1e-6);  // bytes to mb
+         // const float size_mb = file_stream->tellg() * float(1e-6);  // bytes to mb
          file_stream->seekg(0, std::ios::beg);
 
          PlyFile file;
@@ -70,12 +83,7 @@ class Loader {
             SPDLOG_WARN("loader: {}", e.what());
          }
          try {
-            colors = file.request_properties_from_element("vertex", {"red", "green", "blue", "alpha"});
-         } catch (const std::exception &e) {
-            SPDLOG_WARN("loader: {}", e.what());
-         }
-         try {
-            colors = file.request_properties_from_element("vertex", {"r", "g", "b", "a"});
+            colors = file.request_properties_from_element("vertex", {"red", "green", "blue"});
          } catch (const std::exception &e) {
             SPDLOG_WARN("loader: {}", e.what());
          }
@@ -98,22 +106,75 @@ class Loader {
             SPDLOG_WARN("loader: {}", e.what());
          }
 
+         file.read(*file_stream);
+
          // confirm with logs
-         if (vertices) SPDLOG_INFO("\tread {} vertices", vertices->count);
-         if (normals) SPDLOG_INFO("\tread {} vertex normals", normals->count);
-         if (colors) SPDLOG_INFO("\tread {} vertex colors", colors->count);
-         if (texcoords) SPDLOG_INFO("\tread {} vertex texcoords", texcoords->count);
-         if (faces) SPDLOG_INFO("\tread {} faces (triangles)", faces->count);
-         if (tristrip) SPDLOG_INFO("\tread {} indices (tristrip)", tinyply::PropertyTable[tristrip->t].stride);
-         if (faces && faces->list_sizes.size()) SPDLOG_INFO("\tread {} variable-length indices", faces->list_sizes.size());
+         if (vertices)
+            SPDLOG_INFO("\tread {} vertices", vertices->count);
+         if (normals)
+            SPDLOG_INFO("\tread {} vertex normals", normals->count);
+         if (colors)
+            SPDLOG_INFO("\tread {} vertex colors", colors->count);
+         if (texcoords)
+            SPDLOG_INFO("\tread {} vertex texcoords", texcoords->count);
+         if (faces)
+            SPDLOG_INFO("\tread {} faces (triangles)", faces->count);
+         if (tristrip)
+            SPDLOG_INFO("\tread {} indices (tristrip)", tinyply::PropertyTable[tristrip->t].stride);
+         if (faces && faces->list_sizes.size())
+            SPDLOG_INFO("\tread {} variable-length indices", faces->list_sizes.size());
 
          // TODO: convert to my internal project datatypes
+         std::vector<Vertex> verts(vertices->count);
+         float *pos = reinterpret_cast<float *>(vertices->buffer.get());
+         for (size_t i = 0; i < vertices->count; i++)
+            verts[i].position = {pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]};
+         if (normals) {
+            float *nor = reinterpret_cast<float *>(normals->buffer.get());
+            for (size_t i = 0; i < vertices->count; i++)
+               verts[i].normal = {nor[i * 3], nor[i * 3 + 1], nor[i * 3 + 2]};
+         }
+         if (colors)
+            SPDLOG_INFO("\tcolor type: {}", tinyply::PropertyTable[colors->t].str);
+         if (colors) {
+            uint8_t *col = colors->buffer.get();
+            for (size_t i = 0; i < vertices->count; i++)
+               verts[i].color = {col[i * 3] / 255.f, col[i * 3 + 1] / 255.f, col[i * 3 + 2] / 255.f};
+         }
 
          SPDLOG_INFO("done loading: {}", path);
+
+         SPDLOG_INFO("uploading loaded model to gpu");
+
+         // uploads to gpu
+         PointCloud pcd;
+         // note that this is temporary:
+         //    upload directly to gpu buffer
+         glGenVertexArrays(1, &pcd.vao);
+         glGenBuffers(1, &pcd.vbo);
+         glBindVertexArray(pcd.vao);
+         glBindBuffer(GL_ARRAY_BUFFER, pcd.vbo);
+         glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(Vertex), verts.data(), GL_STATIC_DRAW);
+
+         // attributes--
+         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, position));
+         glEnableVertexAttribArray(0);
+         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
+         glEnableVertexAttribArray(1);
+         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, color));
+         glEnableVertexAttribArray(2);
+
+         pcd.vertex_count = verts.size();
+         glBindVertexArray(0);
+
+         scene.pcd = std::make_unique<PointCloud>(pcd);
 
       } catch (const std::exception &e) {
          SPDLOG_ERROR("caught loader exception: {}", e.what());
       }
+   }
+
+   void upload() {
    }
 
  private:

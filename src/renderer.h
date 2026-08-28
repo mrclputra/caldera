@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include "shader.h"
+#include "scene.h"
 
 namespace caldera {
 // this class is for all rendering related operations
@@ -14,7 +15,7 @@ class Renderer {
  public:
    Renderer();
    ~Renderer();
-   void render(GLFWwindow *window);
+   void render(GLFWwindow *window, Scene & scene);
 
    unsigned int vbo;
    unsigned int vao;

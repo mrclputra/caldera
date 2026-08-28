@@ -16,31 +16,32 @@ void glfw_framebuffer_size_callback(GLFWwindow *, int width, int height) {
 
 App::App() {
    glfwInit();
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-      glfwSetErrorCallback(glfw_error_callback);
+   glfwSetErrorCallback(glfw_error_callback);
 
-      window = glfwCreateWindow(1280, 720, "caldera", nullptr, nullptr);
-      glfwMakeContextCurrent(window);
-      gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+   window = glfwCreateWindow(1280, 720, "caldera", nullptr, nullptr);
+   glfwMakeContextCurrent(window);
+   gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-      glfwSetKeyCallback(window, glfw_key_callback);
-      glfwSetFramebufferSizeCallback(window, glfw_framebuffer_size_callback);
+   glfwSetKeyCallback(window, glfw_key_callback);
+   glfwSetFramebufferSizeCallback(window, glfw_framebuffer_size_callback);
 
-      renderer = std::make_unique<Renderer>();
+   renderer = std::make_unique<Renderer>();
+   scene = std::make_unique<Scene>();
 
-      SPDLOG_INFO("application initialized");
+   SPDLOG_INFO("application initialized");
 
-      // testing function
-      Loader loader;
-      loader.read_ply_file("D:/datasets/clouds/Workshop_point_cloud.ply", true);
+   // testing function
+   Loader loader;
+   loader.read_ply_file(*scene, "D:/datasets/clouds/winfield_test_14m.ply", true);
 }
 
 void App::start() {
    while (!glfwWindowShouldClose(window)) {
-      renderer->render(window);
+      renderer->render(window, *scene);
    }
    shutdown();
 }
