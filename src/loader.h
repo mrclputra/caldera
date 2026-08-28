@@ -98,6 +98,15 @@ class Loader {
             SPDLOG_WARN("loader: {}", e.what());
          }
 
+         // confirm with logs
+         if (vertices) SPDLOG_INFO("\tread {} vertices", vertices->count);
+         if (normals) SPDLOG_INFO("\tread {} vertex normals", normals->count);
+         if (colors) SPDLOG_INFO("\tread {} vertex colors", colors->count);
+         if (texcoords) SPDLOG_INFO("\tread {} vertex texcoords", texcoords->count);
+         if (faces) SPDLOG_INFO("\tread {} faces (triangles)", faces->count);
+         if (tristrip) SPDLOG_INFO("\tread {} indices (tristrip)", tinyply::PropertyTable[tristrip->t].stride);
+         if (faces && faces->list_sizes.size()) SPDLOG_INFO("\tread {} variable-length indices", faces->list_sizes.size());
+
          // TODO: convert to my internal project datatypes
 
          SPDLOG_INFO("done loading: {}", path);
