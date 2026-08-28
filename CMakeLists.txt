@@ -12,6 +12,8 @@ find_package(tinyply REQUIRED)
 
 add_executable(caldera
    src/main.cpp
+   src/app.cpp
+   src/renderer.cpp
 )
 
 
