@@ -11,20 +11,16 @@
 #include <fstream>     // for reading files
 #include <spanstream>  // ++23
 
-// #include "scene.h"  // todo: do we really need this?
-// #include "pointcloud.h"
+#include "scene.h"
+#include "pointcloud.h"
 
 namespace caldera {
 
-// this is a temporary datastructure to store the loaded data,
-// the idea is that a pcd would have a vector of these
-// struct vertex {
-//    glm::vec3 position{0.0f};
-//    glm::vec3 normal{0.0f};
-//    glm::vec3 tangent{0.0f};
-//    glm::vec3 bitangent{0.0f};
-//    glm::vec3 color{0.0f};
-// };
+struct Vertex {
+   glm::vec3 position{0.0f};
+   glm::vec3 normal{0.0f};
+   glm::vec3 color{1.0f, 0.0f, 1.0f};
+};
 
 class Loader {
  public:
@@ -80,25 +76,29 @@ class Loader {
          // to be filled
          // std::shared_ptr<tinyply::PlyData> vertices, normals, colors, texcoords, faces, tristrip;  // todo: i believe this should be module-level
 
+         std::shared_ptr<tinyply::PlyData> tinyply_vertices;
+         std::shared_ptr<tinyply::PlyData> tinyply_normals;
+         std::shared_ptr<tinyply::PlyData> tinyply_colors;
+
          try {
-            vertices = file.request_properties_from_element("vertex", {"x", "y", "z"});
+            tinyply_vertices = file.request_properties_from_element("vertex", {"x", "y", "z"});
             SPDLOG_INFO("loaded vertices in x y z");
          } catch (const std::exception &e) {
             SPDLOG_ERROR("no vertices: {}", e.what());
          }
          try {
-            normals = file.request_properties_from_element("vertex", {"nx", "ny", "nz"});
+            tinyply_normals = file.request_properties_from_element("vertex", {"nx", "ny", "nz"});
             SPDLOG_INFO("loaded normals in nx ny nz");
          } catch (const std::exception &e) {
             SPDLOG_WARN("no normals: {}", e.what());
          }
          try {
-            colors = file.request_properties_from_element("vertex", {"red", "green", "blue"});
+            tinyply_colors = file.request_properties_from_element("vertex", {"red", "green", "blue"});
             SPDLOG_INFO("loaded colors in red green blue");
          } catch (const std::exception &e) {
             SPDLOG_WARN("no colors in red green blue: {}", e.what());
             try {
-               colors = file.request_properties_from_element("vertex", {"r", "g", "b"});
+               tinyply_colors = file.request_properties_from_element("vertex", {"r", "g", "b"});
                SPDLOG_INFO("loaded colors in r g b");
             } catch (const std::exception &e) {
                SPDLOG_WARN("no colors in rgb either: {}", e.what());
@@ -108,56 +108,104 @@ class Loader {
          file.read(*file_stream);
 
          // log confirmation
-         // if (vertices || vertices->count == 0)
-         if (vertices || vertices->count == 0)
-            SPDLOG_INFO("read {} vertices", vertices->count);
-         if (normals)
-            SPDLOG_INFO("read {} normals", normals->count);
-         if (colors)
-            SPDLOG_INFO("read {} colors", colors->count);
+         if (tinyply_vertices)
+            SPDLOG_INFO("read {} vertices", tinyply_vertices->count);
+         if (tinyply_normals)
+            SPDLOG_INFO("read {} normals", tinyply_normals->count);
+         if (tinyply_colors)
+            SPDLOG_INFO("read {} colors", tinyply_colors->count);
 
-         // example converting to my own datatype
-         SPDLOG_INFO("filedata:");
-         std::vector<glm::vec3> verts = to_vec3(vertices);
-         // for (const auto &v : verts) {
-         //    SPDLOG_INFO("{},{},{}", v.x, v.y, v.z);
-         // }
+         // convert to own datatype
+         vertices.resize(tinyply_vertices->count); // set size
+         for (size_t i = 0; i < vertices.size(); i++) {
+            vertices[i].position = to_vec3(tinyply_vertices, i);
+            if (tinyply_normals)
+               vertices[i].normal = to_vec3(tinyply_normals, i);
+            if (tinyply_colors)
+               vertices[i].color = to_vec3(tinyply_colors, i);
+         }
 
       } catch (const std::exception &e) {
          SPDLOG_ERROR("caught loader exception: {}", e.what());
       }
    }
 
-   void upload();
+   void upload(Scene &scene) {
+      PointCloud pcd;
+      // upload directly to the gpu buffer
+      // note that this might be better to be moved to renderer class
+      glGenVertexArrays(1, &pcd.vao);
+      glGenBuffers(1, &pcd.vbo);
+      glBindVertexArray(pcd.vao);
+      glBindBuffer(GL_ARRAY_BUFFER, pcd.vbo);
+      glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+
+      // attributes--
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, position));
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
+      glEnableVertexAttribArray(1);
+      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, color));
+      glEnableVertexAttribArray(2);
+
+      pcd.vertex_count = vertices.size();
+      glBindVertexArray(0);
+
+      scene.pcd = std::make_unique<PointCloud>(pcd);
+   }
 
  private:
-   std::shared_ptr<tinyply::PlyData> vertices;
-   std::shared_ptr<tinyply::PlyData> normals;
-   std::shared_ptr<tinyply::PlyData> colors;
+   std::vector<Vertex> vertices;
 
-   std::vector<glm::vec3> to_vec3(std::shared_ptr<tinyply::PlyData> &data) {
-      if (!data || data->count == 0)
-         return {};
-
-      std::vector<glm::vec3> out(data->count);
-
+   glm::vec3 to_vec3(const std::shared_ptr<tinyply::PlyData> &data, size_t i) {
       if (data->t == tinyply::Type::FLOAT32) {
-         std::memcpy(out.data(), data->buffer.get(), data->buffer.size_bytes());
-      } else if (data->t == tinyply::Type::FLOAT64) {
-         const double *src = reinterpret_cast<const double *>(data->buffer.get());
-         for (size_t i = 0; i < data->count; i++) {
-            out[i] = glm::vec3(
-                  static_cast<float>(src[i*3+0]),
-                  static_cast<float>(src[i*3+1]),
-                  static_cast<float>(src[i*3+2]));
-         }
-      } else {
-         SPDLOG_ERROR("unsupported vertex type: {}", tinyply::PropertyTable[data->t].str);
-         return {};
+         const float *src = reinterpret_cast<const float *>(data->buffer.get());
+         return glm::vec3(src[i * 3 + 0], src[i * 3 + 1], src[i * 3 + 2]);
       }
-
-      return out;
+      if (data->t == tinyply::Type::FLOAT64) {
+         const double *src = reinterpret_cast<const double *>(data->buffer.get());
+         return glm::vec3(
+             static_cast<float>(src[i * 3 + 0]),
+             static_cast<float>(src[i * 3 + 1]),
+             static_cast<float>(src[i * 3 + 2]));
+      }
+      if (data->t == tinyply::Type::UINT8) {
+         const uint8_t *src = data->buffer.get();
+         return glm::vec3(src[i * 3 + 0], src[i * 3 + 1], src[i * 3 + 2]) / 255.0f;
+      }
+      SPDLOG_ERROR("unsupported vertex type: {}", tinyply::PropertyTable[data->t].str);
+      return glm::vec3(0.0f);
    }
+
+   // std::vector<glm::vec3> to_vec3(std::shared_ptr<tinyply::PlyData> &data) {
+   //    if (!data || data->count == 0)
+   //       return {};
+   //
+   //    std::vector<glm::vec3> out(data->count);
+   //
+   //    if (data->t == tinyply::Type::FLOAT32) {
+   //       std::memcpy(out.data(), data->buffer.get(), data->buffer.size_bytes());
+   //    } else if (data->t == tinyply::Type::FLOAT64) {
+   //       const double *src = reinterpret_cast<const double *>(data->buffer.get());
+   //       for (size_t i = 0; i < data->count; i++) {
+   //          out[i] = glm::vec3(
+   //              static_cast<float>(src[i * 3 + 0]),
+   //              static_cast<float>(src[i * 3 + 1]),
+   //              static_cast<float>(src[i * 3 + 2]));
+   //       }
+   //    } else if (data->t == tinyply::Type::UINT8) {
+   //       const uint8_t *src = data->buffer.get();
+   //       for (size_t i = 0; i < data->count; i++) {
+   //          out[i] = glm::vec3(src[i * 3 + 0], src[i * 3 + 1], src[i * 3 + 2]) / 255.0f;
+   //       }
+   //    } else {
+   //       SPDLOG_ERROR("unsupported vertex type: {}", tinyply::PropertyTable[data->t].str);
+   //       return {};
+   //    }
+   //
+   //    SPDLOG_INFO("converted to vec3");
+   //    return out;
+   // }
 
    std::vector<uint8_t> read_file_binary(const std::string &path) {
       std::ifstream file(path, std::ios::binary);

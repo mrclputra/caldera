@@ -43,6 +43,7 @@ App::App(int argc, char* argv[]) {
    // loader.read_ply_file(*scene, "D:/datasets/clouds/winfield_test_14m.ply", true);
    // loader.read_ply_file(*scene, "C:/Users/Marcelino/Desktop/tests/clouds/flowerPoints.ply", true);
    loader.read_ply_file(argv[1], true);
+   loader.upload(*scene);
    // todo: ask loader to upload to gpu
 }
 
