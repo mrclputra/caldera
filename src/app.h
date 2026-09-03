@@ -16,7 +16,7 @@ namespace caldera {
 // events and bindings go here, callbacks should be sourced from here
 class App {
  public:
-   App();
+   App(int argc, char* argv[]);
    void start();
 
  private:
