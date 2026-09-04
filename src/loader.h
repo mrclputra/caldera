@@ -10,6 +10,7 @@
 #include <vector>
 #include <fstream>     // for reading files
 #include <spanstream>  // ++23
+#include <chrono>
 
 #include "scene.h"
 #include "pointcloud.h"
@@ -27,6 +28,7 @@ class Loader {
    // call this function to load a ply file
    void read_ply_file(const std::string &path, const bool preload) {
       SPDLOG_INFO("reading .ply file: {}", path);
+      auto start = std::chrono::steady_clock::now();
 
       std::unique_ptr<std::istream> file_stream;
       std::vector<uint8_t> byte_buffer;
@@ -42,7 +44,8 @@ class Loader {
             throw std::runtime_error("file_stream failed to open " + path);
 
          file_stream->seekg(0, std::ios::end);
-         SPDLOG_INFO("filesize: {}mb", file_stream->tellg() * float(1e-6));  // bytes to mb
+         float size_mb = file_stream->tellg() * float(1e-6);  // bytes to mb
+         SPDLOG_INFO("filesize: {}mb", size_mb);
          file_stream->seekg(0, std::ios::beg);
 
          tinyply::PlyFile file;
@@ -116,7 +119,7 @@ class Loader {
             SPDLOG_INFO("read {} colors", tinyply_colors->count);
 
          // convert to own datatype
-         vertices.resize(tinyply_vertices->count); // set size
+         vertices.resize(tinyply_vertices->count);  // set size
          for (size_t i = 0; i < vertices.size(); i++) {
             vertices[i].position = to_vec3(tinyply_vertices, i);
             if (tinyply_normals)
@@ -124,6 +127,10 @@ class Loader {
             if (tinyply_colors)
                vertices[i].color = to_vec3(tinyply_colors, i);
          }
+
+         auto end = std::chrono::steady_clock::now();
+         double ms = std::chrono::duration<double, std::milli>(end - start).count();
+         SPDLOG_INFO("loaded {:.2f}mb in {:.2f}ms", size_mb, ms);
 
       } catch (const std::exception &e) {
          SPDLOG_ERROR("caught loader exception: {}", e.what());
@@ -139,7 +146,6 @@ class Loader {
       glBindVertexArray(pcd.vao);
       glBindBuffer(GL_ARRAY_BUFFER, pcd.vbo);
       glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-
 
       // TODO BUG: if normal is not present, vertex breaks for whatever reason? offsets?
       // attributes--
