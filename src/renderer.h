@@ -16,7 +16,7 @@ class Renderer {
  public:
    Renderer();
    ~Renderer();
-   void render(GLFWwindow *window, Scene & scene, Camera &camera);
+   void render(GLFWwindow *window, Scene &scene, Camera &camera);
 
    unsigned int vbo;
    unsigned int vao;
