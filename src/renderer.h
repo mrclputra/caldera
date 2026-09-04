@@ -4,6 +4,7 @@
 
 #include "shader.h"
 #include "scene.h"
+#include "camera.h"
 
 namespace caldera {
 // this class is for all rendering related operations
@@ -15,7 +16,7 @@ class Renderer {
  public:
    Renderer();
    ~Renderer();
-   void render(GLFWwindow *window, Scene & scene);
+   void render(GLFWwindow *window, Scene & scene, Camera &camera);
 
    unsigned int vbo;
    unsigned int vao;

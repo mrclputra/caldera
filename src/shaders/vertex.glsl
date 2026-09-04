@@ -4,14 +4,10 @@ layout(location = 2) in vec3 aColor;
 
 out vec3 vColor;
 
-const float kScale = 0.2;
-const float kNear = -50.0;
-const float kFar = 50.0;
+uniform mat4 view;
+uniform mat4 proj;
 
 void main() {
    vColor = aColor;
-
-   float ndcZ = clamp((aPos.z - kNear) / (kFar - kNear) * 2.0 - 1.0, -1.0, 1.0);
-
-   gl_Position = vec4(aPos.x * kScale, aPos.y * kScale, ndcZ, 1.0);
+   gl_Position = proj * view * vec4(aPos, 1.0f);
 }

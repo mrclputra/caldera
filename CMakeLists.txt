@@ -14,6 +14,7 @@ add_executable(caldera
    src/main.cpp
    src/app.cpp
    src/renderer.cpp
+   src/camera.cpp
 )
 
 
