@@ -140,6 +140,8 @@ class Loader {
       glBindBuffer(GL_ARRAY_BUFFER, pcd.vbo);
       glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
+
+      // TODO BUG: if normal is not present, vertex breaks for whatever reason? offsets?
       // attributes--
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, position));
       glEnableVertexAttribArray(0);

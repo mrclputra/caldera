@@ -9,6 +9,7 @@
 #include "renderer.h"
 #include "scene.h"
 #include "camera.h"
+#include "input.h"
 
 namespace caldera {
 // TODO: use event system to bind glfw actions
@@ -26,5 +27,6 @@ class App {
    std::unique_ptr<Renderer> renderer;
    std::unique_ptr<Scene> scene;
    std::unique_ptr<Camera> camera;
+   std::unique_ptr<Input> input;
 };
 }  // namespace caldera

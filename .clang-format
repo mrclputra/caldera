@@ -16,8 +16,8 @@ BreakBeforeBraces: Attach
 Cpp11BracedListStyle: true
 
 AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
 
 SpaceAfterCStyleCast: false
 SpaceAfterTemplateKeyword: true
