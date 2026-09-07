@@ -20,5 +20,5 @@ cmake -B "$BUILD_DIR" -S . \
 cmake --build "$BUILD_DIR"
 
 cd "$BUILD_DIR"
-# ./"$TARGET_NAME".exe "C:/Users/Marcelino/Desktop/tests/clouds/flowerPoints.ply"
-./"$TARGET_NAME".exe "C:\Users\Marcelino\Desktop\tests\clouds\tree02.ply"
+./"$TARGET_NAME".exe "C:/Users/Marcelino/Desktop/tests/clouds/flowerPoints.ply"
+# ./"$TARGET_NAME".exe "C:\Users\Marcelino\Desktop\tests\clouds\tree02.ply"

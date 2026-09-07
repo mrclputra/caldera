@@ -33,6 +33,7 @@ App::App(int argc, char *argv[]) {
    input = std::make_unique<Input>(window);
    camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, -10.0f));
    renderer = std::make_unique<Renderer>();
+   gui = std::make_unique<Gui>(window);
    scene = std::make_unique<Scene>();
 
    SPDLOG_INFO("application initialized");
@@ -44,26 +45,38 @@ App::App(int argc, char *argv[]) {
 }
 
 void App::start() {
-   double last_time = glfwGetTime();
+   float last_time = static_cast<float>(glfwGetTime());
    while (!glfwWindowShouldClose(window)) {
-      double now = glfwGetTime();
-      float delta = now - last_time;
+      float now = static_cast<float>(glfwGetTime());
+      delta_time = now - last_time;  // todo: make this module level?
       last_time = now;
 
+      glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
       renderer->render(window, *scene, *camera);
+      gui->render();
 
-      if (input->is_key_down(GLFW_KEY_ESCAPE))
-         glfwSetWindowShouldClose(window, true);  // exit program
-      if (input->is_key_down(GLFW_KEY_W)) camera->move_forward(delta);
-      if (input->is_key_down(GLFW_KEY_S)) camera->move_backward(delta);
-      if (input->is_key_down(GLFW_KEY_D)) camera->move_right(delta);
-      if (input->is_key_down(GLFW_KEY_A)) camera->move_left(delta);
-      if (input->is_key_down(GLFW_KEY_E)) camera->move_up(delta);
-      if (input->is_key_down(GLFW_KEY_Q)) camera->move_down(delta);
-      if (input->is_mouse_down(GLFW_MOUSE_BUTTON_LEFT))
-         camera->rotate(float(input->cursor_dx), float(input->cursor_dy));
-
+      // inputs
+      ImGuiIO &io = ImGui::GetIO();
+      if (!io.WantCaptureMouse) {
+         if (input->is_key_down(GLFW_KEY_ESCAPE))
+            glfwSetWindowShouldClose(window, true);  // exit program
+      }
+      if (!io.WantCaptureKeyboard) {
+         if (input->is_key_down(GLFW_KEY_W)) camera->move_forward(delta_time);
+         if (input->is_key_down(GLFW_KEY_S)) camera->move_backward(delta_time);
+         if (input->is_key_down(GLFW_KEY_D)) camera->move_right(delta_time);
+         if (input->is_key_down(GLFW_KEY_A)) camera->move_left(delta_time);
+         if (input->is_key_down(GLFW_KEY_E)) camera->move_up(delta_time);
+         if (input->is_key_down(GLFW_KEY_Q)) camera->move_down(delta_time);
+         if (input->is_mouse_down(GLFW_MOUSE_BUTTON_LEFT))
+            camera->rotate(float(input->cursor_dx), float(input->cursor_dy));
+      }
       input->update();
+
+      glfwSwapBuffers(window);
+      glfwPollEvents();
    }
    shutdown();
 }

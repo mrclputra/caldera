@@ -10,6 +10,7 @@
 #include "scene.h"
 #include "camera.h"
 #include "input.h"
+#include "gui.h"
 
 namespace caldera {
 // TODO: use event system to bind glfw actions
@@ -25,8 +26,11 @@ class App {
 
    GLFWwindow *window;
    std::unique_ptr<Renderer> renderer;
+   std::unique_ptr<Gui> gui;
    std::unique_ptr<Scene> scene;
    std::unique_ptr<Camera> camera;
    std::unique_ptr<Input> input;
+
+   float delta_time;
 };
 }  // namespace caldera

@@ -11,6 +11,6 @@ namespace caldera {
 class Scene {
    public:
       // std::vector<std::unique_ptr<PointCloud>> pointclouds; // tbd
-      std::unique_ptr<PointCloud> pcd;
+      std::unique_ptr<PointCloud> pcd; // currently there can only be a single point cloud at any given time
 };
 }  // namespace caldera

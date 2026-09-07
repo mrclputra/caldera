@@ -13,9 +13,6 @@ Renderer::~Renderer() {
 }
 
 void Renderer::render(GLFWwindow *window, Scene &scene, Camera &camera) {
-   glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
    int width, height;
    glfwGetFramebufferSize(window, &width, &height);
 
@@ -27,8 +24,5 @@ void Renderer::render(GLFWwindow *window, Scene &scene, Camera &camera) {
       glBindVertexArray(scene.pcd->vao);
       glDrawArrays(GL_POINTS, 0, scene.pcd->vertex_count);
    }
-
-   glfwSwapBuffers(window);
-   glfwPollEvents();
 }
 }  // namespace caldera

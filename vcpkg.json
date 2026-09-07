@@ -1,9 +1,16 @@
 {
-  "dependencies": [
-    "glad",
-    "glfw3",
-    "glm",
-    "tinyply",
-    "spdlog"
-  ]
+   "dependencies": [
+      "glad",
+      "glfw3",
+      "glm",
+      "tinyply",
+      "spdlog",
+      {
+         "name": "imgui",
+         "features": [
+            "opengl3-binding",
+            "glfw-binding"
+         ]
+      }
+   ]
 }

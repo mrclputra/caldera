@@ -9,6 +9,7 @@ find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(tinyply REQUIRED)
+find_package(imgui REQUIRED)
 
 add_executable(caldera
    src/main.cpp
@@ -16,8 +17,8 @@ add_executable(caldera
    src/renderer.cpp
    src/camera.cpp
    src/input.cpp
+   src/gui.cpp
 )
-
 
 target_link_libraries(caldera
    glad::glad
@@ -25,6 +26,7 @@ target_link_libraries(caldera
    glm::glm
    tinyply
    spdlog::spdlog
+   imgui::imgui
 )
 
 target_compile_definitions(caldera PRIVATE GLFW_INCLUDE_NONE)
