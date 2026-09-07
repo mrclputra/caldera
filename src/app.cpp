@@ -1,5 +1,4 @@
 #include "app.h"
-
 #include "loader.h"
 
 namespace caldera {
@@ -12,6 +11,14 @@ void glfw_framebuffer_size_callback(GLFWwindow *, int width, int height) {
 }
 
 App::App(int argc, char *argv[]) {
+   // setup logger
+   auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+   g_ring_sink = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(20);  // decide how many lines to save here
+
+   auto logger = std::make_shared<spdlog::logger>("main", spdlog::sinks_init_list{stdout_sink, g_ring_sink});
+   spdlog::set_default_logger(logger);
+   spdlog::set_pattern("[%H:%M:S] [%^%l%$] [%s:%#] %v");
+
    // parse cli arguments
    SPDLOG_INFO("argc: {}", argc);
    SPDLOG_INFO("argv: {}", argv[1]);  // todo: pass this into the loader
@@ -33,7 +40,7 @@ App::App(int argc, char *argv[]) {
    input = std::make_unique<Input>(window);
    camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, -10.0f));
    renderer = std::make_unique<Renderer>();
-   gui = std::make_unique<Gui>(window);
+   gui = std::make_unique<Gui>(window, g_ring_sink);
    scene = std::make_unique<Scene>();
 
    SPDLOG_INFO("application initialized");
@@ -59,17 +66,19 @@ void App::start() {
 
       // inputs
       ImGuiIO &io = ImGui::GetIO();
-      if (!io.WantCaptureMouse) {
+      if (!io.WantCaptureKeyboard || !io.WantCaptureMouse) {
          if (input->is_key_down(GLFW_KEY_ESCAPE))
             glfwSetWindowShouldClose(window, true);  // exit program
-      }
-      if (!io.WantCaptureKeyboard) {
          if (input->is_key_down(GLFW_KEY_W)) camera->move_forward(delta_time);
          if (input->is_key_down(GLFW_KEY_S)) camera->move_backward(delta_time);
          if (input->is_key_down(GLFW_KEY_D)) camera->move_right(delta_time);
          if (input->is_key_down(GLFW_KEY_A)) camera->move_left(delta_time);
          if (input->is_key_down(GLFW_KEY_E)) camera->move_up(delta_time);
          if (input->is_key_down(GLFW_KEY_Q)) camera->move_down(delta_time);
+         if (input->is_key_down(GLFW_KEY_LEFT_SHIFT))
+            camera->mult = 3.0f;
+         else
+            camera->mult = 1.0f;
          if (input->is_mouse_down(GLFW_MOUSE_BUTTON_LEFT))
             camera->rotate(float(input->cursor_dx), float(input->cursor_dy));
       }

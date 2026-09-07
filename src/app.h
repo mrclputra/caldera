@@ -3,6 +3,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/ringbuffer_sink.h>
 
 #include <memory>
 
@@ -19,7 +21,7 @@ namespace caldera {
 // events and bindings go here, callbacks should be sourced from here
 class App {
  public:
-   App(int argc, char* argv[]);
+   App(int argc, char *argv[]);
    void start();
 
    void shutdown();
@@ -31,6 +33,10 @@ class App {
    std::unique_ptr<Camera> camera;
    std::unique_ptr<Input> input;
 
+   // logger
+   std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> g_ring_sink;
+
+   // time
    float delta_time;
 };
 }  // namespace caldera

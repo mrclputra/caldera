@@ -36,6 +36,7 @@ class Camera {
    void move_left(float delta);
    void move_up(float delta);
    void move_down(float delta);
+   float mult = 1.0f; // this is a movement speed multiplier
 
  private:
    glm::vec3 world_up{0.0f, 1.0f, 0.0f};

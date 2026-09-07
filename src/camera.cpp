@@ -41,22 +41,22 @@ void Camera::rotate(float x_offset, float y_offset) {
    update();
 }
 void Camera::move_forward(float delta) {
-   position += front * speed * delta;
+   position += front * speed * mult * delta;
 }
 void Camera::move_backward(float delta) {
-   position -= front * speed * delta;
+   position -= front * speed * mult * delta;
 }
 void Camera::move_right(float delta) {
-   position += right * speed * delta;
+   position += right * speed * mult * delta;
 }
 void Camera::move_left(float delta) {
-   position -= right * speed * delta;
+   position -= right * speed * mult * delta;
 }
 void Camera::move_up(float delta) {
-   position += up * speed * delta;
+   position += up * speed * mult * delta;
 }
 void Camera::move_down(float delta) {
-   position -= up * speed * delta;
+   position -= up * speed * mult * delta;
 }
 
 }  // namespace caldera
