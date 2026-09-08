@@ -3,7 +3,7 @@
 namespace caldera {
 Renderer::Renderer() {
    glEnable(GL_DEPTH_TEST);
-   // glEnable(GL_PROGRAM_POINT_SIZE); // to be configured, so i dont forget
+   glEnable(GL_PROGRAM_POINT_SIZE);
 
    shader = std::make_unique<Shader>("assets/vertex.glsl", "assets/fragment.glsl");
 }

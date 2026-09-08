@@ -17,6 +17,7 @@ class Gui {
    std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> g_ring_sink;
    GLFWwindow *window;
 
+   // ui functions here
    void draw_log_overlay();
 };
 }  // namespace caldera
