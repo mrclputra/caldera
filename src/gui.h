@@ -6,6 +6,12 @@
 #include <GLFW/glfw3.h>
 #include <spdlog/sinks/ringbuffer_sink.h>
 
+// TODO:
+//    - add a performance profiler (I believe we can use deltatime from app)
+//    - add an info panel and buttons to load new point clouds and stuff
+//    - panel docking? also make it static
+//    - custom color theme (creamy)
+
 namespace caldera {
 // this is a wrapper class for imgui
 class Gui {
