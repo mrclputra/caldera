@@ -61,8 +61,11 @@ void App::start() {
       glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+      // render scene
       renderer->render(window, *scene, *camera);
-      gui->render();
+
+      // render ui
+      gui->render(delta_time * 1000.0);
 
       // inputs
       ImGuiIO &io = ImGui::GetIO();

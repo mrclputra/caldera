@@ -33,13 +33,14 @@ Gui::~Gui() {
    glfwTerminate();
 }
 
-void Gui::render() {
+void Gui::render(double ms) {
    ImGui_ImplOpenGL3_NewFrame();
    ImGui_ImplGlfw_NewFrame();
    ImGui::NewFrame();
 
    // ImGui::ShowDemoWindow(); // demo window
    draw_log_overlay();
+   draw_info_overlay(ms);
 
    ImGui::Render();
    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -47,7 +48,7 @@ void Gui::render() {
 
 void Gui::draw_log_overlay() {
    const ImGuiViewport *vp = ImGui::GetMainViewport();
-   ImGui::SetNextWindowPos({vp->WorkPos.x + 10.0f, vp->WorkPos.y + vp->WorkSize.y - 10.0f}, ImGuiCond_Always, {0.0f, 1.0f});
+   ImGui::SetNextWindowPos({vp->WorkPos.x + 10.0f, vp->WorkSize.y - 10.0f}, ImGuiCond_Always, {0.0f, 1.0f});
 
    ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
                             ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs;
@@ -64,6 +65,41 @@ void Gui::draw_log_overlay() {
 
    ImGui::End();
    ImGui::PopStyleVar();
+}
+
+void Gui::draw_info_overlay(double ms) {
+   const ImGuiViewport *vp = ImGui::GetMainViewport();
+
+   // todo: set window flags here
+   // todo: set window style here
+
+   // profiler stuff
+   static const int FRAME_HIST_COUNT = 2000;
+   static float frame_time_history[FRAME_HIST_COUNT] = {0};
+   static int frame_time_offset = 0;
+   static int frame_time_count = 0;
+
+   frame_time_history[frame_time_offset] = (float)ms;
+   frame_time_offset = (frame_time_offset + 1) % FRAME_HIST_COUNT;
+   if (frame_time_count < FRAME_HIST_COUNT) frame_time_count++;
+
+   float sum = 0.0f, max = 0.0f;
+   for (float v : frame_time_history) {
+      sum += v;
+      if (v > max) max = v;
+   }
+   float avg = sum / frame_time_count;
+
+   ImGui::Begin("profiler", nullptr, NULL);
+
+   ImGui::Text("Current: %.2f ms", ms);
+   ImGui::Text("Average: %.2f ms (%.1f fps)", avg, (avg > 0.0f) ? 1000.0f / avg : 0.0f);
+
+   ImGui::PlotLines("", frame_time_history, FRAME_HIST_COUNT, frame_time_offset, nullptr, 0.0f, max + 2.0f, ImVec2(ImGui::GetContentRegionAvail().x, 80));
+
+   ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "Max: %.1f ms", max);
+
+   ImGui::End();
 }
 
 }  // namespace caldera
