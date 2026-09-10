@@ -7,11 +7,12 @@
 #include <spdlog/sinks/ringbuffer_sink.h>
 
 #include "histogram.h"
+#include "profiler.h"
+#include "log.h"
 
-// TODO:
-//    - add an info panel and buttons to load new point clouds and stuff
-//    - panel docking? also make it static
-//    - custom color theme (creamy)
+// todo:
+//    - figure out how to plug loader into the gui
+//    - would this require some kind of event system to be implemented?
 
 namespace caldera {
 // this is a wrapper class for imgui
@@ -21,12 +22,10 @@ class Gui {
    ~Gui();
    void render(double ms, const unsigned char *pixels, const float *depth, int width, int height);  // draw the gui
  private:
-   std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> g_ring_sink;
    GLFWwindow *window;
 
+   std::unique_ptr<Log> log;
    std::unique_ptr<Histogram> histogram;
-
-   void draw_log_overlay();
-   void draw_info_overlay(double ms, const unsigned char *pixels, const float *depth, int width, int height);
+   std::unique_ptr<Profiler> profiler;
 };
 }  // namespace caldera

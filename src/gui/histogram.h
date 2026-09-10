@@ -22,6 +22,7 @@ class Histogram {
    }
 
    void draw() const {
+      ImGui::Begin("histogram");
       auto plot = [](const char *id, const std::array<int, 256> &bins, ImVec4 color) {
          std::array<float, 256> f;
          for (int i = 0; i < 256; ++i) f[i] = static_cast<float>(bins[i]);
@@ -36,6 +37,7 @@ class Histogram {
       plot("##hist_r", bins_r, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
       plot("##hist_g", bins_g, ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
       plot("##hist_b", bins_b, ImVec4(0.3f, 0.3f, 1.0f, 1.0f));
+      ImGui::End();
    }
 
  private:
