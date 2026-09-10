@@ -17,7 +17,7 @@ add_executable(caldera
    src/renderer.cpp
    src/camera.cpp
    src/input.cpp
-   src/gui.cpp
+   src/gui/gui.cpp
 )
 
 target_link_libraries(caldera

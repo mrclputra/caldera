@@ -52,6 +52,8 @@ App::App(int argc, char *argv[]) {
 }
 
 void App::start() {
+   SPDLOG_INFO("beginning main process");
+
    float last_time = static_cast<float>(glfwGetTime());
    while (!glfwWindowShouldClose(window)) {
       float now = static_cast<float>(glfwGetTime());
@@ -64,8 +66,20 @@ void App::start() {
       // render scene
       renderer->render(window, *scene, *camera);
 
+      // read pixels
+      // first time histogram, there is probably a better way to do this,
+      //    but i just wanted to demonstrate the use of glreadpixels()
+      // in this case we read both depth and color buffers--depth to mask out the background and color for a histogram
+      int fb_w, fb_h;
+      glfwGetFramebufferSize(window, &fb_w, &fb_h);
+      std::vector<unsigned char> pixels(static_cast<size_t>(fb_w) * fb_h * 3);
+      std::vector<float> depth(static_cast<size_t>(fb_w) * fb_h);
+      glPixelStorei(GL_PACK_ALIGNMENT, 1);
+      glReadPixels(0, 0, fb_w, fb_h, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());
+      glReadPixels(0, 0, fb_w, fb_h, GL_DEPTH_COMPONENT, GL_FLOAT, depth.data());
+
       // render ui
-      gui->render(delta_time * 1000.0);
+      gui->render(delta_time * 1000.0, pixels.data(), depth.data(), fb_w, fb_h);
 
       // inputs
       ImGuiIO &io = ImGui::GetIO();

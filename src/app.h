@@ -12,7 +12,7 @@
 #include "scene.h"
 #include "camera.h"
 #include "input.h"
-#include "gui.h"
+#include "gui/gui.h"
 
 namespace caldera {
 // TODO: use event system to bind glfw actions

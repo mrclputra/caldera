@@ -19,6 +19,8 @@ Gui::Gui(GLFWwindow *window, std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> 
    ImGui_ImplOpenGL3_Init(glsl_version);
 
    SPDLOG_INFO("imgui glsl_version: {}", glsl_version);
+
+   histogram = std::make_unique<Histogram>();
 }
 Gui::~Gui() {
    // cleanup
@@ -33,14 +35,14 @@ Gui::~Gui() {
    glfwTerminate();
 }
 
-void Gui::render(double ms) {
+void Gui::render(double ms, const unsigned char *pixels, const float *depth, int width, int height) {
    ImGui_ImplOpenGL3_NewFrame();
    ImGui_ImplGlfw_NewFrame();
    ImGui::NewFrame();
 
    // ImGui::ShowDemoWindow(); // demo window
    draw_log_overlay();
-   draw_info_overlay(ms);
+   draw_info_overlay(ms, pixels, depth, width, height);
 
    ImGui::Render();
    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -67,7 +69,7 @@ void Gui::draw_log_overlay() {
    ImGui::PopStyleVar();
 }
 
-void Gui::draw_info_overlay(double ms) {
+void Gui::draw_info_overlay(double ms, const unsigned char *pixels, const float *depth, int width, int height) {
    const ImGuiViewport *vp = ImGui::GetMainViewport();
 
    // todo: set window flags here
@@ -98,6 +100,9 @@ void Gui::draw_info_overlay(double ms) {
    ImGui::PlotLines("", frame_time_history, FRAME_HIST_COUNT, frame_time_offset, nullptr, 0.0f, max + 2.0f, ImVec2(ImGui::GetContentRegionAvail().x, 80));
 
    ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "Max: %.1f ms", max);
+
+   histogram->compute(pixels, depth, width, height);
+   histogram->draw();
 
    ImGui::End();
 }

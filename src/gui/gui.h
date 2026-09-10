@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #include <spdlog/sinks/ringbuffer_sink.h>
 
+#include "histogram.h"
+
 // TODO:
 //    - add an info panel and buttons to load new point clouds and stuff
 //    - panel docking? also make it static
@@ -17,12 +19,14 @@ class Gui {
  public:
    Gui(GLFWwindow *window, std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> g_ring_sink);
    ~Gui();
-   void render(double ms);  // draw the gui
+   void render(double ms, const unsigned char *pixels, const float *depth, int width, int height);  // draw the gui
  private:
    std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> g_ring_sink;
    GLFWwindow *window;
 
+   std::unique_ptr<Histogram> histogram;
+
    void draw_log_overlay();
-   void draw_info_overlay(double ms);
+   void draw_info_overlay(double ms, const unsigned char *pixels, const float *depth, int width, int height);
 };
 }  // namespace caldera
