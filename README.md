@@ -21,3 +21,10 @@ Or you can just run `./run.sh`, which does the same and launches with a sample p
 ```
 
 Only `.ply` files are supported (ASCII or binary)
+
+### notes
+
+TODO:
+- PDAL integration
+- Monte-Carlo point rendering
+- transforms and basic operations

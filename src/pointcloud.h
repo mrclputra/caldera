@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 namespace caldera {
    // im not sure if this is the best approach for storing point clouds
    // here I am just storing the opengl handles for uploaded stuff, though it may be useful to store the actual vertex data in-memory
@@ -10,5 +12,8 @@ namespace caldera {
    struct PointCloud {
       unsigned int vao, vbo;
       unsigned int vertex_count;
+
+      glm::vec3 center{0.0f};
+      float radius{0.0f};  // bounding sphere radius
    };
 }

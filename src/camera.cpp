@@ -33,6 +33,16 @@ glm::mat4 Camera::get_proj_matrix(int width, int height) {
        far_plane);
 }
 
+void Camera::frame(glm::vec3 center, float radius) {
+   radius = std::max(radius, 0.01f);
+
+   float distance = radius / tan(glm::radians(fov * 0.5f)) * 1.2f;
+   position = center - front * distance;
+
+   far_plane = std::max(far_plane, radius * 4.0f);
+   speed = std::max(speed, radius * 0.5f);
+}
+
 void Camera::rotate(float x_offset, float y_offset) {
    yaw += x_offset * sensitivity;
    pitch -= y_offset * sensitivity;

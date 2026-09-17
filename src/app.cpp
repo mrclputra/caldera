@@ -49,6 +49,9 @@ App::App(int argc, char *argv[]) {
    Loader loader;
    loader.read_ply_file(argv[1], true);
    loader.upload(*scene);
+
+   if (scene->pcd)
+      camera->frame(scene->pcd->center, scene->pcd->radius);
 }
 
 void App::start() {
@@ -61,6 +64,7 @@ void App::start() {
       last_time = now;
 
       glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+      // glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       // render scene

@@ -16,7 +16,7 @@ class Camera {
    float yaw{90.0f};
 
    float sensitivity = 0.12f;
-   float speed = 3.0f;
+   float speed = 10.0f;
    float fov = 50.0f;  // deg
    float near_plane = 0.1f;
    float far_plane = 10000.0f;
@@ -27,6 +27,9 @@ class Camera {
 
    glm::mat4 get_view_matrix();
    glm::mat4 get_proj_matrix(int width, int height);
+
+   // make sure object is in frame
+   void frame(glm::vec3 center, float radius);
 
    // movement
    void rotate(float x_offset, float y_offset);

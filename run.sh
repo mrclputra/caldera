@@ -26,7 +26,7 @@ mkdir -p "$DIST_DIR"
 cp "$BUILD_DIR/$TARGET_NAME.exe" "$BUILD_DIR"/*.dll "$DIST_DIR"/
 cp -r "$BUILD_DIR/assets" "$DIST_DIR"/
 
-# run
-cd "$BUILD_DIR"
-./"$TARGET_NAME".exe "C:/Users/Marcelino/Desktop/tests/clouds/flowerPoints.ply" # change this path to whatever you want
-# ./"$TARGET_NAME".exe "C:\Users\Marcelino\Desktop\tests\clouds\tree02.ply"
+# # run
+# cd "$BUILD_DIR"
+# ./"$TARGET_NAME".exe "C:\Users\Marcelino\Downloads\QueenFlat2.ply"
+# # ./"$TARGET_NAME".exe "C:\Users\Marcelino\Desktop\tests\clouds\tree02.ply"

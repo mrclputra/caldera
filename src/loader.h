@@ -6,11 +6,13 @@
 #include <spdlog/spdlog.h>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
 #include <fstream>     // for reading files
 #include <spanstream>  // ++23
 #include <chrono>
+#include <limits>
 
 #include "scene.h"
 #include "pointcloud.h"
@@ -120,12 +122,20 @@ class Loader {
 
          // convert to own datatype
          vertices.resize(tinyply_vertices->count);  // set size
+         bbox_min = glm::vec3(std::numeric_limits<float>::max());
+         bbox_max = glm::vec3(std::numeric_limits<float>::lowest());
+
+         glm::mat3 rot = glm::mat3(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1, 0, 0)));  // define rotation here
+
          for (size_t i = 0; i < vertices.size(); i++) {
-            vertices[i].position = to_vec3(tinyply_vertices, i);
+            vertices[i].position = rot * to_vec3(tinyply_vertices, i);
             if (tinyply_normals)
-               vertices[i].normal = to_vec3(tinyply_normals, i);
+               vertices[i].normal = rot * to_vec3(tinyply_normals, i);
             if (tinyply_colors)
                vertices[i].color = to_vec3(tinyply_colors, i);
+
+            bbox_min = glm::min(bbox_min, vertices[i].position);
+            bbox_max = glm::max(bbox_max, vertices[i].position);
          }
 
          auto end = std::chrono::steady_clock::now();
@@ -157,6 +167,8 @@ class Loader {
       glEnableVertexAttribArray(2);
 
       pcd.vertex_count = vertices.size();
+      pcd.center = (bbox_min + bbox_max) * 0.5f;
+      pcd.radius = glm::length(bbox_max - bbox_min) * 0.5f;
       glBindVertexArray(0);
 
       scene.pcd = std::make_unique<PointCloud>(pcd);
@@ -164,6 +176,7 @@ class Loader {
 
  private:
    std::vector<Vertex> vertices;
+   glm::vec3 bbox_min{0.0f}, bbox_max{0.0f};
 
    glm::vec3 to_vec3(const std::shared_ptr<tinyply::PlyData> &data, size_t i) {
       if (data->t == tinyply::Type::FLOAT32) {
