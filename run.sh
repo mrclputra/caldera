@@ -19,6 +19,14 @@ cmake -B "$BUILD_DIR" -S . \
 
 cmake --build "$BUILD_DIR"
 
+# for distribution
+DIST_DIR="$BUILD_DIR/dist"
+rm -rf "$DIST_DIR"
+mkdir -p "$DIST_DIR"
+cp "$BUILD_DIR/$TARGET_NAME.exe" "$BUILD_DIR"/*.dll "$DIST_DIR"/
+cp -r "$BUILD_DIR/assets" "$DIST_DIR"/
+
+# run
 cd "$BUILD_DIR"
-./"$TARGET_NAME".exe "C:/Users/Marcelino/Desktop/tests/clouds/flowerPoints.ply"
+./"$TARGET_NAME".exe "C:/Users/Marcelino/Desktop/tests/clouds/flowerPoints.ply" # change this path to whatever you want
 # ./"$TARGET_NAME".exe "C:\Users\Marcelino\Desktop\tests\clouds\tree02.ply"

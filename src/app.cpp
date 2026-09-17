@@ -21,7 +21,7 @@ App::App(int argc, char *argv[]) {
 
    // parse cli arguments
    SPDLOG_INFO("argc: {}", argc);
-   SPDLOG_INFO("argv: {}", argv[1]);  // todo: pass this into the loader
+   SPDLOG_INFO("argv: {}", argv[1]);
 
    glfwInit();
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

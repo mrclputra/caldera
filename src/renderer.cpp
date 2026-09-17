@@ -1,11 +1,18 @@
 #include "renderer.h"
+#include <Windows.h>
+#include <cstring>
 
 namespace caldera {
 Renderer::Renderer() {
    glEnable(GL_DEPTH_TEST);
    glEnable(GL_PROGRAM_POINT_SIZE);
 
-   shader = std::make_unique<Shader>("assets/vertex.glsl", "assets/fragment.glsl");
+   // get shader executable path since this won't work with relative paths
+   char exe_path[MAX_PATH];
+   GetModuleFileNameA(nullptr, exe_path, MAX_PATH);
+   std::string dir(exe_path, strrchr(exe_path, '\\') + 1 - exe_path);
+
+   shader = std::make_unique<Shader>(dir + "assets/vertex.glsl", dir + "assets/fragment.glsl");
 }
 Renderer::~Renderer() {
    glDeleteVertexArrays(1, &vao);

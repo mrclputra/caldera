@@ -46,8 +46,8 @@ void Gui::render(double ms, const unsigned char *pixels, const float *depth, int
    log->draw();
    profiler->draw(ms);
 
-   histogram->compute(pixels, depth, width, height);
-   histogram->draw();
+   // histogram->compute(pixels, depth, width, height);
+   // histogram->draw();
 
    ImGui::Render();
    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
