@@ -14,6 +14,9 @@
 #include <chrono>
 #include <limits>
 
+#include <random>
+#include <algorithm>
+
 #include "scene.h"
 #include "pointcloud.h"
 
@@ -126,9 +129,11 @@ class Loader {
          bbox_max = glm::vec3(std::numeric_limits<float>::lowest());
 
          glm::mat3 rot = glm::mat3(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1, 0, 0)));  // define rotation here
+         // glm::mat3 rot = glm::mat3(glm::rotate(glm::mat4(1.0f), glm::radians(-0.0f), glm::vec3(1, 0, 0)));
+         glm::vec3 origin = rot * to_vec3(tinyply_vertices, 0);
 
          for (size_t i = 0; i < vertices.size(); i++) {
-            vertices[i].position = rot * to_vec3(tinyply_vertices, i);
+            vertices[i].position = rot * to_vec3(tinyply_vertices, i) - origin;
             if (tinyply_normals)
                vertices[i].normal = rot * to_vec3(tinyply_normals, i);
             if (tinyply_colors)
@@ -137,6 +142,7 @@ class Loader {
             bbox_min = glm::min(bbox_min, vertices[i].position);
             bbox_max = glm::max(bbox_max, vertices[i].position);
          }
+         std::shuffle(vertices.begin(), vertices.end(), std::mt19937{std::random_device{}()});
 
          auto end = std::chrono::steady_clock::now();
          double ms = std::chrono::duration<double, std::milli>(end - start).count();
@@ -156,6 +162,8 @@ class Loader {
       glBindVertexArray(pcd.vao);
       glBindBuffer(GL_ARRAY_BUFFER, pcd.vbo);
       glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+      if (GLenum err = glGetError(); err != GL_NO_ERROR)
+         SPDLOG_ERROR("glBufferData failed (GL error {:#x}), likely out of GPU memory", err);
 
       // TODO BUG: if normal is not present, vertex breaks for whatever reason? offsets?
       // attributes--

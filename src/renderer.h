@@ -21,6 +21,11 @@ class Renderer {
    unsigned int vbo;
    unsigned int vao;
 
+   unsigned int visible_count = 0;
+   glm::vec3 last_cam_pos{};
+   float last_yaw = 0.0f, last_pitch = 0.0f;
+   bool first_frame = true;
+
    std::unique_ptr<Shader> shader;
 };
 }  // namespace caldera

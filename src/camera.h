@@ -15,9 +15,9 @@ class Camera {
    float pitch{0.0f};
    float yaw{90.0f};
 
-   float sensitivity = 0.12f;
-   float speed = 10.0f;
-   float fov = 50.0f;  // deg
+   float sensitivity = 0.06f;
+   float speed = 12.0f;
+   float fov = 20.0f;  // deg
    float near_plane = 0.1f;
    float far_plane = 10000.0f;
 

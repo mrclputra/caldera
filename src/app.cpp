@@ -30,7 +30,9 @@ App::App(int argc, char *argv[]) {
 
    glfwSetErrorCallback(glfw_error_callback);
 
-   window = glfwCreateWindow(1280, 720, "caldera", nullptr, nullptr);
+   GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+   const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+   window = glfwCreateWindow(mode->width, mode->height, "caldera", monitor, nullptr);
    glfwMakeContextCurrent(window);
    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 

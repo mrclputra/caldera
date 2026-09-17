@@ -36,17 +36,18 @@ glm::mat4 Camera::get_proj_matrix(int width, int height) {
 void Camera::frame(glm::vec3 center, float radius) {
    radius = std::max(radius, 0.01f);
 
-   float distance = radius / tan(glm::radians(fov * 0.5f)) * 1.2f;
+   float distance = radius / tan(glm::radians(fov * 1.0f)) * 1.2f;
    position = center - front * distance;
 
    far_plane = std::max(far_plane, radius * 4.0f);
-   speed = std::max(speed, radius * 0.5f);
+   speed = std::max(speed, radius * 0.3f);
 }
 
 void Camera::rotate(float x_offset, float y_offset) {
    yaw += x_offset * sensitivity;
    pitch -= y_offset * sensitivity;
 
+   yaw = std::fmod(yaw, 360.0f);
    pitch = glm::clamp(pitch, -89.0f, 89.0f);
    update();
 }
@@ -63,10 +64,10 @@ void Camera::move_left(float delta) {
    position -= right * speed * mult * delta;
 }
 void Camera::move_up(float delta) {
-   position += up * speed * mult * delta;
+   position += up * speed * mult * delta * 0.5f;
 }
 void Camera::move_down(float delta) {
-   position -= up * speed * mult * delta;
+   position -= up * speed * mult * delta * 0.5f;
 }
 
 }  // namespace caldera

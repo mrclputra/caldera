@@ -1,6 +1,8 @@
 #include "renderer.h"
+#define NOMINMAX
 #include <Windows.h>
 #include <cstring>
+#include <algorithm>
 
 namespace caldera {
 Renderer::Renderer() {
@@ -28,8 +30,27 @@ void Renderer::render(GLFWwindow *window, Scene &scene, Camera &camera) {
    shader->setMat4("proj", camera.get_proj_matrix(width, height));
 
    if (scene.pcd) {
+      bool moved = first_frame || camera.position != last_cam_pos || camera.yaw != last_yaw || camera.pitch != last_pitch;
+
+      unsigned int floor_count = std::min<unsigned int>(2000, scene.pcd->vertex_count);
+
+      if (moved)
+         visible_count = floor_count;
+      else if (visible_count < scene.pcd->vertex_count)
+         visible_count = std::min(scene.pcd->vertex_count, static_cast<unsigned int>(visible_count * 1.1f) + 1);
+
+      last_cam_pos = camera.position;
+      last_yaw = camera.yaw;
+      last_pitch = camera.pitch;
+      first_frame = false;
+
       glBindVertexArray(scene.pcd->vao);
-      glDrawArrays(GL_POINTS, 0, scene.pcd->vertex_count);
+      glDrawArrays(GL_POINTS, 0, visible_count);
    }
+
+   // if (scene.pcd) {
+   //    glBindVertexArray(scene.pcd->vao);
+   //    glDrawArrays(GL_POINTS, 0, scene.pcd->vertex_count);
+   // }
 }
 }  // namespace caldera
