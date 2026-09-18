@@ -142,8 +142,8 @@ class Loader {
             bbox_min = glm::min(bbox_min, vertices[i].position);
             bbox_max = glm::max(bbox_max, vertices[i].position);
          }
-         std::shuffle(vertices.begin(), vertices.end(), std::mt19937{std::random_device{}()});
-         // std::sort(vertices.begin(), vertices.end(), [](auto &a, auto &b) { return a.position.x < b.position.x; });
+         // std::shuffle(vertices.begin(), vertices.end(), std::mt19937{std::random_device{}()});
+         std::sort(vertices.begin(), vertices.end(), [](auto &a, auto &b) { return a.position.x < b.position.x; });
 
          auto end = std::chrono::steady_clock::now();
          double ms = std::chrono::duration<double, std::milli>(end - start).count();
@@ -247,7 +247,12 @@ class Loader {
          long long size_bytes = file.tellg();
          file.seekg(0, std::ios::beg);
          buffer_bytes.resize(size_bytes);
-         if (file.read((char *)buffer_bytes.data(), size_bytes))
+
+         constexpr long long chunk_size = 1LL << 28; // chunk by 256mb
+         for (long long offset = 0; offset < size_bytes; offset += chunk_size)
+            file.read((char *)buffer_bytes.data() + offset, std::min(chunk_size, size_bytes - offset));
+
+         if (file)
             return buffer_bytes;
       } else {
          throw std::runtime_error("could not open binary ifstream to path: " + path);
