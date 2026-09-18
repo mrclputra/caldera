@@ -18,12 +18,11 @@ class Log {
                                ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs;
       ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
       ImGui::Begin("log", nullptr, flags);
-      // ImGui::SetWindowFontScale(0.7f);
 
       for (const auto &msg : g_ring_sink->last_raw()) {
-         ImVec4 color = msg.level == spdlog::level::err    ? ImVec4(1.0f, 0.3f, 0.3f, 1.0f)
-                        : msg.level == spdlog::level::warn ? ImVec4(1.0f, 0.8f, 0.2f, 1.0f)
-                                                           : ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+         ImVec4 color = msg.level == spdlog::level::err    ? ImVec4(1.0f, 0.3f, 0.3f, 0.5f)
+                        : msg.level == spdlog::level::warn ? ImVec4(1.0f, 0.8f, 0.2f, 0.5f)
+                                                           : ImVec4(1.0f, 1.0f, 1.0f, 0.5f);
          ImGui::TextColored(color, "%s", std::string(msg.payload.data(), msg.payload.size()).c_str());
       }
       ImGui::End();

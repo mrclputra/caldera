@@ -16,6 +16,8 @@ Gui::Gui(
    ImGui_ImplGlfw_InitForOpenGL(this->window, true);
    SPDLOG_INFO("ImGui_ImplGlfw_InitForOpenGL true");
 
+   ImGui::GetIO().FontGlobalScale = 0.7f;
+
    const char *glsl_version = nullptr;
    ImGui_ImplOpenGL3_Init(glsl_version);
 

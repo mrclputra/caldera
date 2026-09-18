@@ -11,8 +11,8 @@ void main() {
    vColor = aColor;
 
    vec4 viewPos = view * vec4(aPos, 1.0f);
-   float distance = -viewPos.z; // you can extract specific attributes of vec4 like this
-   gl_PointSize = 70.0 / max(distance, 0.001);
+   float distance = -viewPos.z;
+   gl_PointSize = 300.0 / max(distance, 0.001);
    // gl_PointSize = 10.0;
    gl_Position = proj * viewPos;
 }

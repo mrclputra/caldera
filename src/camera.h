@@ -1,47 +1,37 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <spdlog/spdlog.h>
+#include <glm/gtc/quaternion.hpp>
 
 namespace caldera {
-// this is wrapper class for a camera in opengl
-// it is important to note that these matrices not updated every frame,
-//    but rather only when inputs are called
+// this is an orbit camera, that rotates around a center at a distance
 class Camera {
  public:
-   // attributes
-   glm::vec3 position;
-   glm::vec3 front, up, right;  // needed for view matrix
-   float pitch{0.0f};
-   float yaw{90.0f};
-
-   float sensitivity = 0.06f;
-   float speed = 12.0f;
-   float fov = 20.0f;  // deg
-   float near_plane = 0.1f;
-   float far_plane = 10000.0f;
-
-   Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f));
-
-   void update();
+   Camera(glm::vec3 center = glm::vec3(0.0f));
 
    glm::mat4 get_view_matrix();
    glm::mat4 get_proj_matrix(int width, int height);
 
-   // make sure object is in frame
-   void frame(glm::vec3 center, float radius);
+   void frame(glm::vec3 center, float radius); // fit object in view
 
-   // movement
-   void rotate(float x_offset, float y_offset);
-   void move_forward(float delta);
-   void move_backward(float delta);
-   void move_right(float delta);
-   void move_left(float delta);
-   void move_up(float delta);
-   void move_down(float delta);
-   float mult = 1.0f; // this is a movement speed multiplier
+   void orbit(glm::vec2 prev, glm::vec2 curr, int width, int height);
+   void pan(float dx, float dy);
+   void zoom(float delta);
+
+   glm::vec3 position{};
+   glm::quat orientation{1.0f, 0.0f, 0.0f, 0.0f};
+   glm::vec3 center{0.0f};
+   float distance = 10.0f;
+
+   float sensitivity = 1.4f;
+   float pan_speed = 0.0003f;
+   float zoom_speed = 0.05f;
+   float fov = 20.0f;
+   float near_plane = 0.1f;
+   float far_plane = 10000.0f;
 
  private:
    glm::vec3 world_up{0.0f, 1.0f, 0.0f};
+   void update(); // update position and stuff
 };
 }  // namespace caldera

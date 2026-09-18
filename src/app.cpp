@@ -27,12 +27,11 @@ App::App(int argc, char *argv[]) {
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+   glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
    glfwSetErrorCallback(glfw_error_callback);
 
-   GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-   const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-   window = glfwCreateWindow(mode->width, mode->height, "caldera", monitor, nullptr);
+   window = glfwCreateWindow(1280, 720, "caldera", nullptr, nullptr);
    glfwMakeContextCurrent(window);
    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
@@ -40,7 +39,7 @@ App::App(int argc, char *argv[]) {
    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
    input = std::make_unique<Input>(window);
-   camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, -10.0f));
+   camera = std::make_unique<Camera>(glm::vec3(0.0f));
    renderer = std::make_unique<Renderer>();
    gui = std::make_unique<Gui>(window, g_ring_sink);
    scene = std::make_unique<Scene>();
@@ -92,18 +91,15 @@ void App::start() {
       if (!io.WantCaptureKeyboard || !io.WantCaptureMouse) {
          if (input->is_key_down(GLFW_KEY_ESCAPE))
             glfwSetWindowShouldClose(window, true);  // exit program
-         if (input->is_key_down(GLFW_KEY_W)) camera->move_forward(delta_time);
-         if (input->is_key_down(GLFW_KEY_S)) camera->move_backward(delta_time);
-         if (input->is_key_down(GLFW_KEY_D)) camera->move_right(delta_time);
-         if (input->is_key_down(GLFW_KEY_A)) camera->move_left(delta_time);
-         if (input->is_key_down(GLFW_KEY_E)) camera->move_up(delta_time);
-         if (input->is_key_down(GLFW_KEY_Q)) camera->move_down(delta_time);
-         if (input->is_key_down(GLFW_KEY_LEFT_SHIFT))
-            camera->mult = 3.0f;
-         else
-            camera->mult = 1.0f;
-         if (input->is_mouse_down(GLFW_MOUSE_BUTTON_LEFT))
-            camera->rotate(float(input->cursor_dx), float(input->cursor_dy));
+         if (input->is_mouse_down(GLFW_MOUSE_BUTTON_LEFT)) {
+            glm::vec2 curr(input->cursor_x, input->cursor_y);
+            glm::vec2 prev = curr - glm::vec2(input->cursor_dx, input->cursor_dy);
+            camera->orbit(prev, curr, fb_w, fb_h);
+         }
+         if (input->is_mouse_down(GLFW_MOUSE_BUTTON_MIDDLE))
+            camera->pan(float(input->cursor_dx), float(input->cursor_dy));
+         if (input->scroll_delta != 0.0)
+            camera->zoom(float(input->scroll_delta));
       }
       input->update();
 

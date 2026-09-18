@@ -24,6 +24,7 @@ class Profiler {
       float avg = sum / frame_time_count;
 
       ImGui::SetNextWindowSize(ImVec2(0, 200), ImGuiCond_FirstUseEver);
+      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
       ImGui::Begin("profiler");
 
       ImGui::Text("Current: %.2f ms", ms);
@@ -34,6 +35,7 @@ class Profiler {
 
       ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "Max: %.1f ms", max);
       ImGui::End();
+      ImGui::PopStyleVar();
    }
 
  private:

@@ -143,6 +143,7 @@ class Loader {
             bbox_max = glm::max(bbox_max, vertices[i].position);
          }
          std::shuffle(vertices.begin(), vertices.end(), std::mt19937{std::random_device{}()});
+         // std::sort(vertices.begin(), vertices.end(), [](auto &a, auto &b) { return a.position.x < b.position.x; });
 
          auto end = std::chrono::steady_clock::now();
          double ms = std::chrono::duration<double, std::milli>(end - start).count();
