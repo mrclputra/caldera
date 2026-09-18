@@ -5,6 +5,7 @@
 #include "shader.h"
 #include "scene.h"
 #include "camera.h"
+#include "gizmos/bbox.h"
 
 namespace caldera {
 // this class is for all rendering related operations
@@ -26,5 +27,6 @@ class Renderer {
    bool first_frame = true;
 
    std::unique_ptr<Shader> shader;
+   std::unique_ptr<BoundingBoxGizmo> bbox_gizmo;
 };
 }  // namespace caldera

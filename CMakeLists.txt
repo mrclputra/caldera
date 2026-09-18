@@ -18,7 +18,11 @@ add_executable(caldera
    src/camera.cpp
    src/input.cpp
    src/gui/gui.cpp
+   src/gizmos/gizmo.cpp
+   src/gizmos/bbox.cpp
 )
+
+target_include_directories(caldera PRIVATE src)
 
 target_link_libraries(caldera
    glad::glad

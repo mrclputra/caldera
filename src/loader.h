@@ -177,7 +177,8 @@ class Loader {
 
       pcd.vertex_count = vertices.size();
       pcd.center = (bbox_min + bbox_max) * 0.5f;
-      pcd.radius = glm::length(bbox_max - bbox_min) * 0.5f;
+      pcd.bbox_min = bbox_min;
+      pcd.bbox_max = bbox_max;
       glBindVertexArray(0);
 
       scene.pcd = std::make_unique<PointCloud>(pcd);

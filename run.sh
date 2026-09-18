@@ -5,7 +5,7 @@ BUILD_DIR="build"
 VCPKG_PATH="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 TARGET_NAME="caldera"
 
-#rm -rf "$BUILD_DIR"
+# rm -rf "$BUILD_DIR"
 
 # use clang binaries
 cmake -B "$BUILD_DIR" -S . \

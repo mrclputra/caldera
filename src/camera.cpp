@@ -48,7 +48,7 @@ void Camera::orbit(glm::vec2 prev, glm::vec2 curr, int width, int height) {
    glm::vec3 axis = glm::cross(p1, p2);
    float axis_len = glm::length(axis);
    if (axis_len < 1e-6f)
-      return;  // negligible movement
+      return;
 
    float angle = std::acos(glm::clamp(glm::dot(p1, p2), -1.0f, 1.0f)) * sensitivity;
    glm::vec3 world_axis = orientation * (axis / axis_len);  // sphere axis is in view space, rotate into world

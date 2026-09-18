@@ -52,7 +52,7 @@ App::App(int argc, char *argv[]) {
    loader.upload(*scene);
 
    if (scene->pcd)
-      camera->frame(scene->pcd->center, scene->pcd->radius);
+      camera->frame(scene->pcd->center, glm::length(scene->pcd->bbox_max - scene->pcd->bbox_min) * 0.5f);
 }
 
 void App::start() {
