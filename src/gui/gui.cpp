@@ -48,8 +48,26 @@ void Gui::render(double ms, const unsigned char *pixels, const float *depth, int
    log->draw();
    profiler->draw(ms);
 
-   // histogram->compute(pixels, depth, width, height);
-   // histogram->draw();
+   histogram->compute(pixels, depth, width, height);
+   histogram->draw();
+
+   // todo: add loaded filename
+   // todo: add button to load a new file
+   //    -> need to clear gpu memory
+   //    -> need to make sure systems work with no object loaded
+   //    -> detach loader from constructors?
+
+   // todo: add the following controls
+   // -> min monte-carlo vertex count
+   //    -> max monte-carlo vertex count? (later)
+   // -> monte-carlo growth rate
+
+   // todo: add alternate methods for viewing point clouds, in preparation for PDAL loading
+   //    -> elevation mode
+   //    -> rgb mode
+   //    -> source mode
+   //    -> index mode
+   //    -> composite mode
 
    ImGui::Render();
    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
