@@ -80,13 +80,17 @@ void Gui::render(double ms, const unsigned char *pixels, const float *depth, int
    ImGui::Separator();
    ImGui::Text("Monte-Carlo");
    ImGui::Text("Initial Count");
-   ImGui::SliderInt("##init_points", &state.init_points, 0, static_cast<int>(state.vertex_count / 8));
+   ImGui::SliderInt("##init_points", &state.init_points, 0, state.vertex_count / 8);
    ImGui::Text("Growth Rate");
    ImGui::SliderFloat("##growth_rate", &state.growth_rate, 1.0f, 1.5f);
 
    ImGui::Separator();
    ImGui::Text("View Mode");
    ImGui::Combo("##view_mode", &state.view_mode, "Elevation\0RGB\0Source\0Index\0Composite\0");
+
+   ImGui::Separator();
+   ImGui::Text("point size");
+   ImGui::SliderInt("##point_size", &state.point_size, 1, 10);
 
    ImGui::PopStyleVar();
 
