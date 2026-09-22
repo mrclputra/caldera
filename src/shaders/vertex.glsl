@@ -7,12 +7,12 @@ out vec3 vColor;
 uniform mat4 view;
 uniform mat4 proj;
 
-// todo: add uniforms for point size
+uniform uint pointSize;
 
 void main() {
    vColor = aColor;
 
    vec4 viewPos = view * vec4(aPos, 1.0f);
-   gl_PointSize = 300.0 / max(-viewPos.z, 0.001);
+   gl_PointSize = (float(pointSize) * 100.0) / max(-viewPos.z, 0.001);
    gl_Position = proj * viewPos;
 }

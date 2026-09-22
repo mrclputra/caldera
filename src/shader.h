@@ -68,6 +68,9 @@ class Shader {
    void setInt(const std::string &name, const int value) {
       glUniform1i(glGetUniformLocation(program, name.c_str()), value);
    }
+   void setUInt(const std::string& name, const unsigned int value) {
+      glUniform1ui(glGetUniformLocation(program, name.c_str()), value);
+   }
    void setFloat(const std::string &name, const float value) {
       glUniform1f(glGetUniformLocation(program, name.c_str()), value);
    }

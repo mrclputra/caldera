@@ -19,6 +19,7 @@
 
 #include "scene.h"
 #include "pointcloud.h"
+#include "state.h"
 
 namespace caldera {
 
@@ -33,6 +34,7 @@ class Loader {
    // call this function to load a ply file
    void read_ply_file(const std::string &path, const bool preload) {
       SPDLOG_INFO("reading .ply file: {}", path);
+      state.loaded_filename = path;
       auto start = std::chrono::steady_clock::now();
 
       std::unique_ptr<std::istream> file_stream;
@@ -176,6 +178,8 @@ class Loader {
       glEnableVertexAttribArray(2);
 
       pcd.vertex_count = vertices.size();
+      state.vertex_count = pcd.vertex_count;
+      state.init_points = static_cast<unsigned int>(pcd.vertex_count / 16);
       pcd.center = (bbox_min + bbox_max) * 0.5f;
       pcd.bbox_min = bbox_min;
       pcd.bbox_max = bbox_max;

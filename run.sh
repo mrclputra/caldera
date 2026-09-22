@@ -30,4 +30,5 @@ cp -r "$BUILD_DIR/assets" "$DIST_DIR"/
 cd "$BUILD_DIR"
 # # ./"$TARGET_NAME".exe "C:\Users\Marcelino\Downloads\QueenFlat2.ply"
 # ./"$TARGET_NAME".exe "C:\Users\Marcelino\Desktop\tests\clouds\tree02.ply"
-./"$TARGET_NAME".exe "C:\Users\Marcelino\Desktop\tests\OpenTopography\20150608_it-ren_nadir_densified_point_cloud_merged.ply"
+./"$TARGET_NAME".exe "C:\Users\Marcelino\Desktop\tests\OpenTopography\Dense Cloud Selmun 2021.ply"
+# ./"$TARGET_NAME".exe "C:\Users\Marcelino\Desktop\tests\OpenTopography\20150608_it-ren_nadir_densified_point_cloud_merged.ply"

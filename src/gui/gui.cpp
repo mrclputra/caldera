@@ -1,11 +1,13 @@
 #include "gui.h"
+#include "../state.h"
 
 #include <spdlog/spdlog.h>
 
 namespace caldera {
-Gui::Gui(
-    GLFWwindow *window,
-    std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> g_ring_sink) {
+
+State state;
+
+Gui::Gui(GLFWwindow *window, std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> g_ring_sink) {
 
    this->window = window;
 
@@ -46,6 +48,8 @@ void Gui::render(double ms, const unsigned char *pixels, const float *depth, int
    ImGui::NewFrame();
 
    log->draw();
+
+   ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
    profiler->draw(ms);
 
    histogram->compute(pixels, depth, width, height);
@@ -68,6 +72,25 @@ void Gui::render(double ms, const unsigned char *pixels, const float *depth, int
    //    -> source mode
    //    -> index mode
    //    -> composite mode
+
+   ImGui::Begin("Controls");
+   ImGui::Text("Loaded file: %s", state.loaded_filename.empty() ? "none" : state.loaded_filename.c_str());
+   // if (ImGui::Button("Load File")) state.request_load = true;
+
+   ImGui::Separator();
+   ImGui::Text("Monte-Carlo");
+   ImGui::Text("Initial Count");
+   ImGui::SliderInt("##init_points", &state.init_points, 0, static_cast<int>(state.vertex_count / 8));
+   ImGui::Text("Growth Rate");
+   ImGui::SliderFloat("##growth_rate", &state.growth_rate, 1.0f, 1.5f);
+
+   ImGui::Separator();
+   ImGui::Text("View Mode");
+   ImGui::Combo("##view_mode", &state.view_mode, "Elevation\0RGB\0Source\0Index\0Composite\0");
+
+   ImGui::PopStyleVar();
+
+   ImGui::End();
 
    ImGui::Render();
    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
