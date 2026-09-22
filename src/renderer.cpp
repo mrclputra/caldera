@@ -33,12 +33,13 @@ void Renderer::render(GLFWwindow *window, Scene &scene, Camera &camera) {
    if (scene.pcd) {
       bool moved = first_frame || camera.position != last_cam_pos;
 
-      unsigned int floor_count = std::min<unsigned int>(4500, scene.pcd->vertex_count);
+      unsigned int floor_count = std::min<unsigned int>(scene.pcd->vertex_count / 16, scene.pcd->vertex_count);
+      // unsigned int floor_count = std::min<unsigned int>(9000, scene.pcd->vertex_count);
 
       if (moved)
          visible_count = floor_count;
       else if (visible_count < scene.pcd->vertex_count)
-         visible_count = std::min(scene.pcd->vertex_count, static_cast<unsigned int>(visible_count * 1.06f) + 1);
+         visible_count = std::min(scene.pcd->vertex_count, static_cast<unsigned int>(visible_count * 1.1f) + 1);
 
       last_cam_pos = camera.position;
       first_frame = false;
@@ -49,10 +50,5 @@ void Renderer::render(GLFWwindow *window, Scene &scene, Camera &camera) {
       bbox_gizmo->set_bounds(scene.pcd->bbox_min, scene.pcd->bbox_max);
       bbox_gizmo->draw(camera.get_view_matrix(), camera.get_proj_matrix(width, height));
    }
-
-   // if (scene.pcd) {
-   //    glBindVertexArray(scene.pcd->vao);
-   //    glDrawArrays(GL_POINTS, 0, scene.pcd->vertex_count);
-   // }
 }
 }  // namespace caldera

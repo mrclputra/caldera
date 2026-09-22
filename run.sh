@@ -26,7 +26,8 @@ mkdir -p "$DIST_DIR"
 cp "$BUILD_DIR/$TARGET_NAME.exe" "$BUILD_DIR"/*.dll "$DIST_DIR"/
 cp -r "$BUILD_DIR/assets" "$DIST_DIR"/
 
-# # run
-# cd "$BUILD_DIR"
+# run
+cd "$BUILD_DIR"
 # # ./"$TARGET_NAME".exe "C:\Users\Marcelino\Downloads\QueenFlat2.ply"
 # ./"$TARGET_NAME".exe "C:\Users\Marcelino\Desktop\tests\clouds\tree02.ply"
+./"$TARGET_NAME".exe "C:\Users\Marcelino\Desktop\tests\OpenTopography\20150608_it-ren_nadir_densified_point_cloud_merged.ply"

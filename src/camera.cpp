@@ -6,15 +6,17 @@
 
 namespace caldera {
 
-namespace {
 glm::vec3 project_to_sphere(float x, float y, int width, int height) {
-   float nx = (2.0f * x - width) / width;
-   float ny = (height - 2.0f * y) / height;  // flip: screen y grows down
-   float len2 = nx * nx + ny * ny;
+   // normalize screen coordinates
+   float nx = (2.0f * x - (float)width) / (float)width;
+   float ny = ((float)height - 2.0f * y) / (float)height;  // screen y goes down
+   float len2 = nx * nx + ny * ny;                         // compute 2d length
+
+   // compute z depending on distance from center
+   // this is the sphere part
    float nz = len2 <= 0.5f ? std::sqrt(1.0f - len2) : 0.5f / std::sqrt(len2);
    return glm::normalize(glm::vec3(nx, ny, nz));
 }
-}  // namespace
 
 Camera::Camera(glm::vec3 center) {
    this->center = center;
@@ -45,14 +47,19 @@ void Camera::orbit(glm::vec2 prev, glm::vec2 curr, int width, int height) {
    glm::vec3 p1 = project_to_sphere(prev.x, prev.y, width, height);
    glm::vec3 p2 = project_to_sphere(curr.x, curr.y, width, height);
 
-   glm::vec3 axis = glm::cross(p1, p2);
-   float axis_len = glm::length(axis);
+   // find the axis of rotation
+   glm::vec3 axis = glm::cross(p1, p2);  // gives a perpendicular vector
+   float axis_len = glm::length(axis);   // how much to rotate
    if (axis_len < 1e-6f)
-      return;
+      return;  // prevent zero-length
 
+   // since p1 and p2 are unit vectors, their dot product is the cosine of the angle between them
+   // we can then scale this by sensitivity
    float angle = std::acos(glm::clamp(glm::dot(p1, p2), -1.0f, 1.0f)) * sensitivity;
-   glm::vec3 world_axis = orientation * (axis / axis_len);  // sphere axis is in view space, rotate into world
-   orientation = glm::normalize(glm::angleAxis(-angle, world_axis) * orientation);
+
+   // transform the axis from view space to world space
+   glm::vec3 world_axis = orientation * (axis / axis_len);
+   orientation = glm::normalize(glm::angleAxis(-angle, world_axis) * orientation);  // apply
    update();
 }
 

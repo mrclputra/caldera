@@ -92,7 +92,7 @@ void App::start() {
          if (input->is_key_down(GLFW_KEY_ESCAPE))
             glfwSetWindowShouldClose(window, true);  // exit program
          if (input->is_mouse_down(GLFW_MOUSE_BUTTON_LEFT)) {
-            glm::vec2 curr(input->cursor_x, input->cursor_y);
+            glm::vec2 curr = glm::vec2(input->cursor_x, input->cursor_y);
             glm::vec2 prev = curr - glm::vec2(input->cursor_dx, input->cursor_dy);
             camera->orbit(prev, curr, fb_w, fb_h);
          }
